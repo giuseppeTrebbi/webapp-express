@@ -7,10 +7,11 @@
   "type": "module",
   "main": "app.js",
   "scripts": {
-    "start": "node app.js",
-    "dev": "node --watch app.js"
+    "start": "node --env-file=.env app.js",
+    "dev": "node --watch --env-file=.env app.js"
   },
   "dependencies": {
-    "express": "^5.2.1"
+    "express": "^5.2.1",
+    "mysql2": "^3.20.0"
   }
 }
