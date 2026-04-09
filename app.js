@@ -8,14 +8,8 @@ const app = express()
 const port = "3000"
 
 
-app.use(cors({
-    origin: '*'
-}))
-
-
+app.use(cors( { origin: '*' } ))
 app.use(express.static("public"))
-
-
 app.use("/api/movies", moviesRouter)
 
 

@@ -19,7 +19,7 @@ function index(req, res) {
         const movies = result.map(movie => {
             return {
                 ...movie,
-                image: `${process.env.SERVER_URL}/covers/${movie.image}`,
+                image: movie.image ? `${process.env.SERVER_URL}/covers/${movie.image}` : null,
                 created_at: DateTime.fromObject(movie.created_at).setLocale("it").toLocaleString(),
                 updated_at: DateTime.fromObject(movie.updated_at).setLocale("it").toLocaleString()
             }
@@ -29,36 +29,36 @@ function index(req, res) {
 }
 
 
+
 function show(req, res) {
-    const { id } = req.params
+    const { slug } = req.params
+
+
     const movieQuery = `select movies.*, cast(avg(reviews.vote) as float) as avg_vote
                         from movies
                         left join reviews
                         on movies.id = reviews.movie_id
-                        where movies.id = ?`
-
-
-    connection.query(movieQuery, [id], (err, result) => {
+                        where movies.slug = ?`
+    connection.query(movieQuery, [slug], (err, result) => {
         if (err) {
             throw err
         }
-        if (result.length === 0) {
+        if (result.length === 0 || !result[0].id) {
             res.status(404)
             return res.json({
                 message: "film non trovato"
             })
         }
         const movie = result[0]
+
         const reviewsQuery = "SELECT * FROM reviews WHERE movie_id = ?"
-
-
-        connection.query(reviewsQuery, [id], (err, reviewsResult) => {
+        connection.query(reviewsQuery, [movie.id], (err, reviewsResult) => {
             if (err) {
                 throw err
             }
             const movieWithReviews = {
                 ...movie,
-                image: `${process.env.SERVER_URL}/covers/${movie.image}`,
+                image: movie.image ? `${process.env.SERVER_URL}/covers/${movie.image}` : null,
                 created_at: DateTime.fromObject(movie.created_at).setLocale("it").toLocaleString(),
                 updated_at: DateTime.fromObject(movie.updated_at).setLocale("it").toLocaleString(),
                 reviews: reviewsResult.map(review => {
