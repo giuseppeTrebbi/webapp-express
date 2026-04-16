@@ -85,11 +85,9 @@ function storeReview(req, res) {
     const { name, vote, text } = req.body
     const sql = `INSERT INTO reviews (movie_id, name, vote, text)
                 VALUES (?, ?, ?, ?)`
-
     
     connection.query(sql, [id, name, vote, text], (err, results) => {
         if(err) { throw err }
-        console.log(results)
         res.status(201)
         res.json({
             message: "review added"
@@ -98,7 +96,24 @@ function storeReview(req, res) {
 }
 
 
-export default { index, show, storeReview }
+function storeMovie(req, res) {
+    const { title, director, genre, release_year, abstract } = req.body
+    const sql = `INSERT INTO movies (title, director, genre, release_year, abstract)
+                VALUES (?, ?, ?, ?, ?)`
+    
+                
+    connection.query(sql, [title, director, genre, release_year, abstract], (err, results) => {
+        if(err) { throw err }
+        console.log(results)
+        res.status(201)
+        res.json({
+            message: "movie added"
+        })
+    })
+}
+
+
+export default { index, show, storeReview, storeMovie }
 
 
 
