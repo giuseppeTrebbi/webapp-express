@@ -1,5 +1,6 @@
 import connection from "../database/dbConnection.js"
 import { DateTime } from "luxon"
+import slugify from "slugify"
 
 
 
@@ -98,13 +99,16 @@ function storeReview(req, res) {
 
 function storeMovie(req, res) {
     const { title, director, genre, release_year, abstract } = req.body
-    const sql = `INSERT INTO movies (title, director, genre, release_year, abstract)
-                VALUES (?, ?, ?, ?, ?)`
+    const slug = slugify(title, {
+        lower: true,
+        strict: true
+    })
+    const image = req.file.filename
+    const sql = `INSERT INTO movies (slug, title, director, genre, release_year, abstract, image)
+                VALUES (?, ?, ?, ?, ?, ?, ?)`
     
-                
-    connection.query(sql, [title, director, genre, release_year, abstract], (err, results) => {
-        if(err) { throw err }
-        console.log(results)
+
+    connection.query(sql, [slug, title, director, genre, release_year, abstract, image], results => {
         res.status(201)
         res.json({
             message: "movie added"
